@@ -1,117 +1,164 @@
-# Hexagonal Permutation Cipher (HPC)
+Welcome to the **Hexagonal Permutation Cipher (HPC)**! This is a hobbyist project exploring a custom encryption algorithm implemented in Python. **It is not intended for production use** and serves as a fun exploration into cryptography concepts. The algorithm leverages hexagonal grid permutations in conjunction with AES encryption to provide an added layer of security to standard text encryption. 
 
-Welcome to the Hexagonal Permutation Cipher (HPC) repository! HPC is a unique cryptographic algorithm that utilizes hexagonal grid permutations combined with AES encryption for secure text encryption and decryption.
+**Note:** This project is a personal exploration and is not intended for production use. Please do not use it for real-world security applications.
 
-## Overview
-
-The Hexagonal Permutation Cipher (HPC) is designed to provide a novel approach to cryptography by:
-- Using a hexagonal grid for permutation-based encryption.
-- Leveraging AES encryption for secure data handling.
-- Combining permutation and AES for enhanced security.
+## Table of Contents
+- [Features](#features)
+- [Understanding the Algorithm](#understanding-the-algorithm)
+    - [Hexagonal Grid Structure](#hexagonal-grid-structure)
+    - [Permutation Mechanism](#permutation-mechanism)
+    - [AES Encryption](#aes-encryption)
+    - [Decryption Process](#decryption-process)
+- [Technologies Used](#technologies-used)
+- [Installation and Usage](#installation-and-usage)
+- [Usage Guide](#usage-guide)
+    - [Encrypting Text](#encrypting-text)
+    - [Decrypting Text](#decrypting-text)
+    - [Visualizing Permutations](#visualizing-permutations)
+- [Security Considerations](#security-considerations)
+- [Potential Applications](#potential-applications)
+- [Additional Notes](#additional-notes)
+- [Contributing](#contributing)
+- [Contact](#contact)
 
 ## Features
 
-- **Unique Encryption Algorithm**: A novel approach that leverages hexagonal grids for permutation and AES for encryption.
-- **Secure AES Encryption**: Uses AES encryption in CBC mode with PKCS7 padding for robust security.
-- **Key-Based Encryption**: Uses a hashed secret key to configure permutation and AES operations.
-- **Efficient Numpy Integration**: Utilizes numpy for efficient grid operations and matrix manipulations.
-- **Improved Performance**: Enhanced performance through optimized matrix operations using numpy arrays.
-- **Pure Python Implementation**: Implemented in Python with minimal external dependencies.
+- **Hexagonal Grid Permutation:** The positions of characters are shuffled based on a key, using a hexagonal grid structure for the permutation.
+- **AES Encryption:** The permuted data is further encrypted using the strong AES algorithm in CBC mode.
+- **Key-Based Encryption:** Encryption and decryption rely on a secret key, hashed for added security.
+- **Visualization:** Includes a `animate_permutation` function to visualize the permutation process using Pygame.
+- **Retro Effects:** Added scanlines and noise to the visualization for a retro monitor effect.
 
-## Table of Contents
+## Understanding the Algorithm
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Algorithm Details](#algorithm-details)
-- [Examples](#examples)
-- [Contributing](#contributing)
+### Hexagonal Grid Structure
 
-## Installation
+The core of the algorithm is a hexagonal grid, a two-dimensional structure with interconnected hexagonal cells. The grid's size adapts dynamically to the length of the input text.
 
-To get started with HPC, simply clone the repository and install the required dependencies:
+### Permutation Mechanism
 
-```bash
-git clone https://github.com/00-Python/Hexagonal-Permutation-Cipher.git
-cd Hexagonal-Permutation-Cipher
-pip install -r requirements.txt
-```
+1. **Key Hashing:** The user-provided key is hashed using SHA256 to generate a random number generator seed and the AES encryption key.
+2. **Index Permutation:** A random permutation of indices is created based on the seed, dictating the order in which the grid cells are shuffled.
+3. **Matrix Transformation and Permutation:** The plaintext is converted into a matrix conforming to the grid's shape, and then this matrix is permuted according to the generated indices.
 
-## Usage
+### AES Encryption
 
-### Encrypting Text
-
-To encrypt text using the HPC algorithm, use the `encrypt` function:
-
-```python
-from hpc import encrypt
-
-plaintext = "This is a unique cryptographic cipher test!"
-key = "SuperSecretKey"
-
-encrypted_text = encrypt(plaintext, key)
-print("Encrypted:", encrypted_text)
-```
-
-### Decrypting Text
-
-To decrypt text, use the `decrypt` function:
-
-```python
-from hpc import decrypt
-
-decrypted_text = decrypt(encrypted_text, key)
-print("Decrypted:", decrypted_text)
-```
-
-## Algorithm Details
-
-### Hexagonal Grid Permutation
-
-- **Hexagonal Grid**: A 2D grid with hexagonal cells is used for permutation operations, now implemented using numpy arrays for efficient manipulation.
-- **Permutation Function**: Permutations are applied based on key-derived values to shuffle the grid cells using numpy's permutation functions.
-
-### Encryption Process
-
-1. **Convert Text to Matrix**: Convert plaintext into a numpy array matrix based on the hexagonal grid.
-2. **Apply Permutations**: Permute the matrix using a seeded random number generator derived from the hashed key.
-3. **AES Encryption**: Encrypt the permuted data using AES with the hashed key.
-4. **Convert to Encrypted Text**: Convert the encrypted byte data to text.
+The permuted data is then encrypted using AES in CBC (Cipher Block Chaining) mode with PKCS7 padding. The same hashed key used for permutation ensures consistency in encryption and decryption.
 
 ### Decryption Process
 
-1. **AES Decryption**: Decrypt the encrypted data using AES with the hashed key.
-2. **Convert Encrypted Text to Matrix**: Convert the decrypted byte data into a numpy array matrix.
-3. **Reverse Permutations**: Reverse the permutation process using the key.
-4. **Convert Back to Original Text**: Convert the matrix back to plaintext.
+The decryption process is the inverse of encryption:
 
-## Examples
+1. The encrypted text is converted back into a matrix.
+2. The inverse permutation is applied to the matrix.
+3. AES decryption is used to recover the original plaintext.
 
-### Example Code
+## Technologies Used
 
-Here’s a complete example showing both encryption and decryption:
+The project leverages the following Python libraries:
 
-```python
-from hpc import encrypt, decrypt
+- **NumPy:** For efficient numerical operations and matrix manipulations.
+- **PyCryptodome:** For implementing the AES encryption and decryption.
+- **Pygame:** For creating the visual representation of the permutation process.
 
-plaintext = "This is a unique cryptographic cipher test!"
-key = "SuperSecretKey"
+## Installation and Usage
 
-# Encrypt the plaintext
-encrypted_text = encrypt(plaintext, key)
-print("Encrypted:", encrypted_text)
+To get started with the Hexagonal Permutation Cipher, follow these steps:
 
-# Decrypt the encrypted text
-decrypted_text = decrypt(encrypted_text, key)
-print("Decrypted:", decrypted_text)
-```
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/00-Python/Hexagonal-Permutation-Cipher.git
+   ```
+
+2. **Install dependencies:**
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. **Run the script:**
+   ```sh
+   python hpc.py
+   ```
+
+## Usage Guide
+
+### Encrypting Text
+
+To encrypt text using the Hexagonal Permutation Cipher:
+
+1. **Provide the plaintext and the key:**
+    ```python
+    plaintext = "This is a test message!"
+    key = "SuperSecretKey"
+    ```
+
+2. **Call the `encrypt` function:**
+    ```python
+    encrypted_text = encrypt(plaintext, key)
+    print("Encrypted:", encrypted_text)
+    ```
+
+### Decrypting Text
+
+To decrypt text using the Hexagonal Permutation Cipher:
+
+1. **Provide the encrypted text and the key:**
+    ```python
+    encrypted_text = "...."  # The encrypted string
+    key = "SuperSecretKey"
+    ```
+
+2. **Call the `decrypt` function:**
+    ```python
+    decrypted_text = decrypt(encrypted_text, key)
+    print("Decrypted:", decrypted_text)
+    ```
+
+### Visualizing Permutations
+
+To visualize the permutation process using Pygame:
+
+1. **Generate the hexagonal grid:**
+    ```python
+    text = "This is a test message!"
+    size = max(1, math.ceil((len(text) / 3) ** 0.5))
+    grid = create_hexagonal_grid(size)
+    key = "SuperSecretKey"
+    aes_key = hashlib.sha256(key.encode()).digest()
+    ```
+
+2. **Call the `animate_permutation` function:**
+    ```python
+    animate_permutation(grid, aes_key)
+    ```
+
+## Security Considerations
+
+As this project is a hobbyist and exploratory project, several security considerations are highlighted:
+
+- **Not Production Ready:** This project is not suitable for production use.
+- **No Security Audits:** The algorithm has not undergone any security audits or rigorous testing.
+- **Experimental:** It is an experimental project meant for educational purposes and to spur curiosity about cryptography.
+
+## Potential Applications
+
+While not suited for production use, some potential exploratory applications include:
+
+- **Educational Tool:** Teaching principles of cryptography and permutations.
+- **Creative Projects:** Integrating the encryption algorithm into art or performance pieces.
+- **Visualization:** Creating engaging visualizations to illustrate encryption/decryption processes.
+
+## Additional Notes
+
+- **Padding:** The plaintext is padded with spaces if it doesn't fit perfectly into the grid. This padding is removed during decryption.
+- **Byte Conversion:** The matrix data is converted to bytes before encryption and back to characters after decryption for compatibility.
 
 ## Contributing
 
-We welcome contributions to the HPC project! If you have suggestions, bug reports, or would like to contribute code, please follow these steps:
+Contributions to this project are welcome. Please fork the repository and submit pull requests with your enhancements or bug fixes. Feel free to open issues to report bugs or suggest new features.
 
-1. **Fork the Repository**: Create your own fork of the repository on GitHub.
-2. **Create a Branch**: Create a new branch for your changes.
-3. **Commit Changes**: Make your changes and commit them to your branch.
-4. **Push and Pull Request**: Push your changes and create a pull request for review.
+## Contact
 
-Please adhere to the best practices and ensure your changes are thoroughly tested.
+If you have any questions or suggestions, feel free to reach me:
+
+- **GitHub:** [00-Python](https://github.com/00-Python)
