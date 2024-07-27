@@ -1,20 +1,20 @@
 # Hexagonal Permutation Cipher (HPC)
 
-Welcome to the Hexagonal Permutation Cipher (HPC) repository! HPC is a unique, dependency-free cryptographic algorithm that utilizes hexagonal grid permutations combined with modular arithmetic for secure text encryption and decryption.
+Welcome to the Hexagonal Permutation Cipher (HPC) repository! HPC is a unique cryptographic algorithm that utilizes hexagonal grid permutations combined with AES encryption for secure text encryption and decryption.
 
 ## Overview
 
 The Hexagonal Permutation Cipher (HPC) is designed to provide a novel approach to cryptography by:
 - Using a hexagonal grid for permutation-based encryption.
-- Employing modular arithmetic to manage values.
-- Avoiding external dependencies for maximum portability.
+- Leveraging AES encryption for secure data handling.
+- Combining permutation and AES for enhanced security.
 
 ## Features
 
-- **Unique Encryption Algorithm**: A novel approach that leverages hexagonal grids for encryption.
-- **Dependency-Free**: Implemented in pure Python with no external libraries.
-- **Modular Arithmetic**: Ensures all values remain within a manageable range.
-- **Key-Based Encryption**: Uses a secret key to configure permutation operations.
+- **Unique Encryption Algorithm**: A novel approach that leverages hexagonal grids for permutation and AES for encryption.
+- **Secure AES Encryption**: Uses AES encryption in CBC mode with PKCS7 padding for robust security.
+- **Key-Based Encryption**: Uses a hashed secret key to configure permutation and AES operations.
+- **Pure Python Implementation**: Implemented in Python with minimal external dependencies.
 
 ## Table of Contents
 
@@ -26,14 +26,13 @@ The Hexagonal Permutation Cipher (HPC) is designed to provide a novel approach t
 
 ## Installation
 
-To get started with HPC, simply clone the repository:
+To get started with HPC, simply clone the repository and install the required dependencies:
 
 ```bash
 git clone https://github.com/00-Python/Hexagonal-Permutation-Cipher.git
 cd Hexagonal-Permutation-Cipher
+pip install -r requirements.txt
 ```
-
-No additional dependencies are required beyond standard Python libraries.
 
 ## Usage
 
@@ -71,15 +70,17 @@ print("Decrypted:", decrypted_text)
 
 ### Encryption Process
 
-1. **Convert Text to Matrix**: Convert plaintext into a matrix of integers.
-2. **Apply Permutations**: Permute the matrix based on the hexagonal grid and key.
-3. **Convert Back to Text**: Convert the permuted matrix back to text.
+1. **Convert Text to Matrix**: Convert plaintext into a matrix of integers based on the hexagonal grid.
+2. **Apply Permutations**: Permute the matrix using a seeded random number generator derived from the hashed key.
+3. **AES Encryption**: Encrypt the permuted data using AES with the hashed key.
+4. **Convert to Encrypted Text**: Convert the encrypted byte data to text.
 
 ### Decryption Process
 
-1. **Convert Encrypted Text to Matrix**: Convert the encrypted text into a matrix.
-2. **Reverse Permutations**: Reverse the permutation process using the key.
-3. **Convert Back to Original Text**: Convert the matrix back to plaintext.
+1. **AES Decryption**: Decrypt the encrypted data using AES with the hashed key.
+2. **Convert Encrypted Text to Matrix**: Convert the decrypted byte data into a matrix.
+3. **Reverse Permutations**: Reverse the permutation process using the key.
+4. **Convert Back to Original Text**: Convert the matrix back to plaintext.
 
 ## Examples
 
