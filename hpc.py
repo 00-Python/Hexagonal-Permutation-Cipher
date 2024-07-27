@@ -13,48 +13,45 @@ import random
 AES_BLOCK_SIZE = 16
 
 class Matrix:
-    def __init__(self, grid: List[List[int]]):
+    def __init__(self, grid: np.ndarray):
         self.grid = grid
-        self.flat = [cell for row in grid for cell in row]
-        self.dimensions = (len(grid), len(grid[0]) if grid else 0)
+        self.flat = grid.flatten()
+        self.dimensions = grid.shape
 
-    def flatten(self) -> List[int]:
-        return self.flat
+    def to_2d(self, flat_list: np.ndarray) -> np.ndarray:
+        return flat_list.reshape(self.dimensions)
 
-    def to_2d(self, flat_list: List[int]) -> List[List[int]]:
-        index = 0
-        new_grid = []
-        for row in self.grid:
-            new_grid.append(flat_list[index:index + len(row)])
-            index += len(row)
-        return new_grid
-
-def create_hexagonal_grid(size: int) -> List[List[int]]:
+def create_hexagonal_grid(size: int) -> np.ndarray:
     """
-    Create a hexagonal grid of integers.
+    Create a hexagonal grid of integers with consistent row lengths.
 
     Args:
-        size (int): The size of the grid.
+        size (int): The size (radius) of the grid.
 
     Returns:
-        List[List[int]]: The hexagonal grid in a 2D list representation.
+        np.ndarray: The hexagonal grid in a 2D numpy array representation.
     """
     grid = []
     counter = 1
+    max_length = size * 3 - 2
 
     # Create the upper part of the hexagon (including the middle row)
     for row in range(size):
-        grid.append(list(range(counter, counter + size + row)))
+        row_values = list(range(counter, counter + size + row))
+        row_values.extend([0] * (max_length - len(row_values)))  # Padding with zeros
+        grid.append(row_values)
         counter += (size + row)
 
     # Create the lower part of the hexagon
     for row in range(size - 1):
-        grid.append(list(range(counter, counter + 2 * size - row - 2)))
+        row_values = list(range(counter, counter + 2 * size - row - 2))
+        row_values.extend([0] * (max_length - len(row_values)))  # Padding with zeros
+        grid.append(row_values)
         counter += (2 * size - row - 2)
 
-    return grid
-
-def hex_coord(x, y, size):
+    return np.array(grid, dtype=int)
+    
+def hex_coord(x: int, y: int, size: float) -> Tuple[float, float]:
     """
     Calculate the 2D coordinates for a hexagon in a hexagonal grid.
 
@@ -68,7 +65,7 @@ def hex_coord(x, y, size):
     """
     return (size * (3 / 2 * x), size * (np.sqrt(3) * (y + 0.5 * (x % 2))))
 
-def draw_hex(surface, x, y, size, facecolor, text, font):
+def draw_hex(surface, x: int, y: int, size: float, facecolor: str, text: str, font):
     """
     Draw a hexagon on the Pygame surface.
 
@@ -83,7 +80,7 @@ def draw_hex(surface, x, y, size, facecolor, text, font):
     """
     xy = hex_coord(x, y, size)
     hexagon = [
-        (xy[0] + size * np.cos(np.radians(angle)), xy[1] + size * np.sin(np.radians(angle)))
+        (xy[0] + size * math.cos(math.radians(angle)), xy[1] + size * math.sin(math.radians(angle)))
         for angle in range(30, 360, 60)
     ]
     pygame.draw.polygon(surface, facecolor, hexagon)
@@ -92,40 +89,34 @@ def draw_hex(surface, x, y, size, facecolor, text, font):
     text_rect = text_surf.get_rect(center=xy)
     surface.blit(text_surf, text_rect)
 
-def text_to_matrix(text: str, grid: List[List[int]]) -> List[List[str]]:
+def text_to_matrix(text: str, grid: np.ndarray) -> np.ndarray:
     """
     Convert text into a matrix based on the grid's structure.
 
     Args:
         text (str): The input text.
-        grid (List[List[int]]): The hexagonal grid.
+        grid (np.ndarray): The hexagonal grid.
 
     Returns:
-        List[List[str]]: The matrix representation of the text.
+        np.ndarray: The matrix representation of the text.
     """
-    flat_grid_length = sum(len(row) for row in grid)
+    flat_grid_length = grid.size
     padded_text = text.ljust(flat_grid_length)  # Pad text to fit into the grid
-    chars = iter(padded_text)
-    
-    matrix = []
-    for row in grid:
-        matrix.append([next(chars) for _ in row])
-    
-    return matrix
+    return np.array(list(padded_text)).reshape(grid.shape)
 
-def permute_grid(grid: List[List[int]], key: bytes) -> List[List[int]]:
+def permute_grid(grid: np.ndarray, key: bytes) -> np.ndarray:
     """
     Permute the hexagonal grid using a key.
 
     Args:
-        grid (List[List[int]]): The original hexagonal grid.
+        grid (np.ndarray): The original hexagonal grid.
         key (bytes): The key used for permutation.
 
     Returns:
-        List[List[int]]: The permuted hexagonal grid.
+        np.ndarray: The permuted hexagonal grid.
     """
     matrix = Matrix(grid)
-    flat_grid = matrix.flatten()
+    flat_grid = matrix.flat
     size = len(flat_grid)
 
     # Create a random number generator with the provided key as seed
@@ -136,12 +127,10 @@ def permute_grid(grid: List[List[int]], key: bytes) -> List[List[int]]:
     permuted_indices = rng.permutation(size)
     
     # Create a new flat grid with permuted values
-    permuted_flat_grid = [flat_grid[i] for i in permuted_indices]
+    permuted_flat_grid = flat_grid[permuted_indices]
 
-    # Convert the flat permuted grid back to 2D list representation
-    permuted_grid = matrix.to_2d(permuted_flat_grid)
-    
-    return permuted_grid
+    # Convert the flat permuted grid back to 2D numpy array representation
+    return matrix.to_2d(permuted_flat_grid)
 
 def aes_encrypt(data: bytes, key: bytes) -> bytes:
     """
@@ -192,8 +181,8 @@ def encrypt(text: str, key: str) -> str:
     aes_key = hashlib.sha256(key.encode()).digest()
     permuted_grid = permute_grid(grid, aes_key)
     
-    matrix = text_to_matrix(text, grid)
-    flattened_matrix = [cell for row in matrix for cell in row]
+    matrix = text_to_matrix(text, permuted_grid)
+    flattened_matrix = matrix.flatten()
     
     # Join the characters into a single string and then convert to bytes
     data_bytes = ''.join(flattened_matrix).encode('utf-8')
@@ -221,9 +210,9 @@ def decrypt(encrypted_text: str, key: str) -> str:
     permuted_grid = permute_grid(grid, aes_key)
     encrypted_data = bytes(ord(char) for char in encrypted_text)
     decrypted_data = aes_decrypt(encrypted_data, aes_key)
-    decrypted_text = decrypted_data.decode('utf-8').rstrip()
-    decrypted_matrix = text_to_matrix(decrypted_text, grid)
-    return decrypted_text
+    
+    decrypted_matrix = text_to_matrix(decrypted_data.decode('utf-8'), permuted_grid)
+    return ''.join(decrypted_matrix.flatten()).rstrip()
 
 def add_scanlines(surface):
     """
@@ -253,12 +242,12 @@ def add_noise(surface, amount=0.02):
         noise_surf.set_at((x, y), color)
     surface.blit(noise_surf, (0, 0))
 
-def animate_permutation(grid: List[List[int]], key: bytes, width=800, height=600):
+def animate_permutation(grid: np.ndarray, key: bytes, width=800, height=600):
     """
     Animate the permutation process of the hexagonal grid.
 
     Args:
-        grid (List[List[int]]): The original hexagonal grid.
+        grid (np.ndarray): The original hexagonal grid.
         key (bytes): The key used for permutation.
         width (int): The width of the Pygame window. Default is 800.
         height (int): The height of the Pygame window. Default is 600.
@@ -271,7 +260,7 @@ def animate_permutation(grid: List[List[int]], key: bytes, width=800, height=600
     font = pygame.font.Font(pygame.font.match_font('monospace'), 24)
     size = 30
 
-    flat_grid = [cell for row in grid for cell in row]
+    flat_grid = grid.flatten()
     grid_length = len(flat_grid)
 
     # Create a random number generator with the provided key as seed
@@ -291,7 +280,8 @@ def animate_permutation(grid: List[List[int]], key: bytes, width=800, height=600
         screen.fill((0, 0, 0))  # Dark background for retro look
 
         current_indices = permuted_indices[:frame + 1]
-        current_grid = [flat_grid[idx] if idx in current_indices else None for idx in range(grid_length)]
+        current_grid = np.full(grid_length, None)
+        current_grid[current_indices] = flat_grid[current_indices]
 
         index = 0
         for y, row in enumerate(grid):
@@ -304,7 +294,7 @@ def animate_permutation(grid: List[List[int]], key: bytes, width=800, height=600
         add_noise(screen)
 
         pygame.display.flip()
-        clock.tick(10)
+        clock.tick(30)  # Increase frame rate for smoother animation
         frame += 1
 
     pygame.quit()
@@ -321,7 +311,7 @@ if __name__ == "__main__":
 
     decrypted_text = decrypt(encrypted_text, key)
     print("Decrypted:", decrypted_text)
-    print("Decrypted length:", len(decrypted_text))
+    print("Decrypted length:", decrypted_text)
 
     assert plaintext == decrypted_text, "Decryption failed"
 
