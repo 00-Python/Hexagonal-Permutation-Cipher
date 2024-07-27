@@ -12,6 +12,23 @@ import random
 # Constants for AES encryption
 AES_BLOCK_SIZE = 16
 
+class Matrix:
+    def __init__(self, grid: List[List[int]]):
+        self.grid = grid
+        self.flat = [cell for row in grid for cell in row]
+        self.dimensions = (len(grid), len(grid[0]) if grid else 0)
+
+    def flatten(self) -> List[int]:
+        return self.flat
+
+    def to_2d(self, flat_list: List[int]) -> List[List[int]]:
+        index = 0
+        new_grid = []
+        for row in self.grid:
+            new_grid.append(flat_list[index:index + len(row)])
+            index += len(row)
+        return new_grid
+
 def create_hexagonal_grid(size: int) -> List[List[int]]:
     """
     Create a hexagonal grid of integers.
@@ -107,7 +124,8 @@ def permute_grid(grid: List[List[int]], key: bytes) -> List[List[int]]:
     Returns:
         List[List[int]]: The permuted hexagonal grid.
     """
-    flat_grid = [cell for row in grid for cell in row]
+    matrix = Matrix(grid)
+    flat_grid = matrix.flatten()
     size = len(flat_grid)
 
     # Create a random number generator with the provided key as seed
@@ -121,11 +139,7 @@ def permute_grid(grid: List[List[int]], key: bytes) -> List[List[int]]:
     permuted_flat_grid = [flat_grid[i] for i in permuted_indices]
 
     # Convert the flat permuted grid back to 2D list representation
-    permuted_grid = []
-    index = 0
-    for row in grid:
-        permuted_grid.append(permuted_flat_grid[index:index + len(row)])
-        index += len(row)
+    permuted_grid = matrix.to_2d(permuted_flat_grid)
     
     return permuted_grid
 
@@ -180,7 +194,10 @@ def encrypt(text: str, key: str) -> str:
     
     matrix = text_to_matrix(text, grid)
     flattened_matrix = [cell for row in matrix for cell in row]
-    data_bytes = bytes(ord(char) for char in flattened_matrix)  # Convert chars to their ASCII values
+    
+    # Join the characters into a single string and then convert to bytes
+    data_bytes = ''.join(flattened_matrix).encode('utf-8')
+
     encrypted_data = aes_encrypt(data_bytes, aes_key)
     encrypted_text = ''.join(chr(byte) for byte in encrypted_data)
     return encrypted_text
@@ -204,7 +221,7 @@ def decrypt(encrypted_text: str, key: str) -> str:
     permuted_grid = permute_grid(grid, aes_key)
     encrypted_data = bytes(ord(char) for char in encrypted_text)
     decrypted_data = aes_decrypt(encrypted_data, aes_key)
-    decrypted_text = ''.join(chr(byte) for byte in decrypted_data).rstrip()
+    decrypted_text = decrypted_data.decode('utf-8').rstrip()
     decrypted_matrix = text_to_matrix(decrypted_text, grid)
     return decrypted_text
 
