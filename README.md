@@ -14,6 +14,8 @@ The Hexagonal Permutation Cipher (HPC) is designed to provide a novel approach t
 - **Unique Encryption Algorithm**: A novel approach that leverages hexagonal grids for permutation and AES for encryption.
 - **Secure AES Encryption**: Uses AES encryption in CBC mode with PKCS7 padding for robust security.
 - **Key-Based Encryption**: Uses a hashed secret key to configure permutation and AES operations.
+- **Efficient Numpy Integration**: Utilizes numpy for efficient grid operations and matrix manipulations.
+- **Improved Performance**: Enhanced performance through optimized matrix operations using numpy arrays.
 - **Pure Python Implementation**: Implemented in Python with minimal external dependencies.
 
 ## Table of Contents
@@ -65,12 +67,12 @@ print("Decrypted:", decrypted_text)
 
 ### Hexagonal Grid Permutation
 
-- **Hexagonal Grid**: A 2D grid with hexagonal cells is used for permutation operations.
-- **Permutation Function**: Permutations are applied based on key-derived values to shuffle the grid cells.
+- **Hexagonal Grid**: A 2D grid with hexagonal cells is used for permutation operations, now implemented using numpy arrays for efficient manipulation.
+- **Permutation Function**: Permutations are applied based on key-derived values to shuffle the grid cells using numpy's permutation functions.
 
 ### Encryption Process
 
-1. **Convert Text to Matrix**: Convert plaintext into a matrix of integers based on the hexagonal grid.
+1. **Convert Text to Matrix**: Convert plaintext into a numpy array matrix based on the hexagonal grid.
 2. **Apply Permutations**: Permute the matrix using a seeded random number generator derived from the hashed key.
 3. **AES Encryption**: Encrypt the permuted data using AES with the hashed key.
 4. **Convert to Encrypted Text**: Convert the encrypted byte data to text.
@@ -78,7 +80,7 @@ print("Decrypted:", decrypted_text)
 ### Decryption Process
 
 1. **AES Decryption**: Decrypt the encrypted data using AES with the hashed key.
-2. **Convert Encrypted Text to Matrix**: Convert the decrypted byte data into a matrix.
+2. **Convert Encrypted Text to Matrix**: Convert the decrypted byte data into a numpy array matrix.
 3. **Reverse Permutations**: Reverse the permutation process using the key.
 4. **Convert Back to Original Text**: Convert the matrix back to plaintext.
 
