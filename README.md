@@ -1,6 +1,6 @@
 # Hexagonal Permutation Cipher (HPC)
 
-![Hexagonal Permutation Cipher](https://your-image-link.com/banner.png)
+<!-- ![Hexagonal Permutation Cipher](https://your-image-link.com/banner.png) -->
 
 [![GitHub issues](https://img.shields.io/github/issues/00-Python/Hexagonal-Permutation-Cipher.svg)](https://github.com/00-Python/Hexagonal-Permutation-Cipher/issues)
 [![GitHub stars](https://img.shields.io/github/stars/00-Python/Hexagonal-Permutation-Cipher.svg)](https://github.com/00-Python/Hexagonal-Permutation-Cipher/stargazers)
@@ -11,7 +11,6 @@ This is a hobbyist project exploring a custom encryption algorithm implemented i
 
 **Note:** This project is a personal exploration and is not intended for production use. Please do not use it for real-world security applications.
 
-    pip install Hexagonal-Permutation-Cipher==1.0.0
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -70,101 +69,10 @@ The project leverages the following Python libraries:
 
 ## Installation and Usage
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/00-Python/Hexagonal-Permutation-Cipher.git
-   ```
-2. **Navigate to the project directory:**
-   ```bash
-   cd Hexagonal-Permutation-Cipher
-   ```
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Run the script:**
-   ```bash
-   python hpc.py
-   ```
+    pip install Hexagonal-Permutation-Cipher==1.0.0
 
-## Code Walkthrough
+Then just run hpc -h for list of commands.
 
-### Creating the Hexagonal Grid
-
-The `create_hexagonal_grid` function generates a hexagonal grid structure of a specified size. This grid is the foundation upon which the permutation algorithm operates.
-
-```python
-def create_hexagonal_grid(size: int) -> np.ndarray:
-    # Function definition here...
-```
-
-### Permutation of the Grid
-
-The `permute_grid` function shuffles the positions of the grid cells based on a key. The key is hashed and used to generate a seed for a random number generator, which determines the permutation order.
-
-```python
-def permute_grid(grid: np.ndarray, key: bytes) -> np.ndarray:
-    # Function definition here...
-```
-
-### Hex to 2D Conversion
-
-The `text_to_matrix` function converts a given text into a matrix that matches the structure of the hexagonal grid.
-
-```python
-def text_to_matrix(text: str, grid: np.ndarray) -> np.ndarray:
-    # Function definition here...
-```
-
-### AES Encryption and Decryption
-
-The `aes_encrypt` and `aes_decrypt` functions handle the AES encryption and decryption processes, ensuring data confidentiality.
-
-```python
-def aes_encrypt(data: bytes, key: bytes) -> bytes:
-    # Function definition here...
-
-def aes_decrypt(encrypted_data: bytes, key: bytes) -> bytes:
-    # Function definition here...
-```
-
-### Animation of Permutation
-
-The `animate_permutation` function visually represents the permutation process using Pygame. This is a cool feature to understand how the permutation works in real-time.
-
-```python
-def animate_permutation(grid: np.ndarray, key: bytes, width=800, height=600):
-    # Function definition here...
-```
-
-## Examples
-
-### Example Encryption and Decryption
-
-Below is an example to demonstrate how to use the `encrypt` and `decrypt` functions:
-
-```python
-if __name__ == "__main__":
-    plaintext = "This is a longer unique and even longer Tru Encryption cryptographic cipher test!"
-    key = "SuperSecretKey"
-
-    print("Plaintext:", plaintext)
-
-    encrypted_text = encrypt(plaintext, key)
-    print("Encrypted:", encrypted_text)
-    print("Encrypted length:", len(encrypted_text))
-
-    decrypted_text = decrypt(encrypted_text, key)
-    print("Decrypted:", decrypted_text)
-    print("Decrypted length:", decrypted_text)
-
-    assert plaintext == decrypted_text, "Decryption failed"
-
-    size = max(1, math.ceil((len(plaintext) / 3) ** 0.5))
-    grid = create_hexagonal_grid(size)
-    aes_key = hashlib.sha256(key.encode()).digest()
-    animate_permutation(grid, aes_key)
-```
 
 ## Potential Applications
 
